@@ -1,0 +1,47 @@
+@use 'sass:color';
+
+// Brand
+$ink: #0a0a12;
+$ink-soft: #6b6b7d;
+$paper: #fdfdff;
+$surface: #ffffff;
+$border: #e7e6ef;
+
+$primary: #6d28ff;
+$primary-2: #ff3ba1;
+$primary-3: #22d3ee;
+
+$primary-dark: color.adjust($primary, $lightness: -12%);
+$primary-tint: color.adjust($primary, $lightness: 40%, $saturation: -10%);
+
+// Dark theme overrides
+$ink-dk: #f4f3fb;
+$ink-soft-dk: #9d9bb3;
+$paper-dk: #0a0a12;
+$surface-dk: #121220;
+$border-dk: #232235;
+
+// Type
+$font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+$font-mono: ui-monospace, Consolas, monospace;
+
+// Layout
+$max-width: 1200px;
+$radius-sm: 8px;
+$radius-md: 16px;
+$radius-lg: 28px;
+
+$bp-md: 768px;
+$bp-lg: 1024px;
+
+@mixin mq($bp) {
+  @media (max-width: $bp) {
+    @content;
+  }
+}
+
+@mixin glass {
+  background: color.adjust($surface, $alpha: -0.35);
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}

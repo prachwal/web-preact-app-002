@@ -1,104 +1,71 @@
-import { useState } from 'preact/hooks'
-import preactLogo from './assets/preact.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './app.css'
+import './app.scss'
+
+const stats = [
+  { value: '99.99%', label: 'Uptime SLA' },
+  { value: '4.2M+', label: 'Requests / day' },
+  { value: '180+', label: 'Countries served' },
+  { value: '<40ms', label: 'Global p95 latency' },
+]
 
 export function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <section id="center">
-        <div class="hero">
-          <img src={heroImg} class="base" width="170" height="179" alt="" />
-          <img src={preactLogo} class="framework" alt="Preact logo" />
-          <img src={viteLogo} class="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/app.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          class="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <div class="hero-page">
+      <div class="hero-glow" aria-hidden="true" />
 
-      <div class="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg class="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img class="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://preactjs.com/" target="_blank">
-                <img class="button-icon" src={preactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+      <nav class="nav">
+        <div class="nav__brand">
+          <span class="nav__mark" />
+          Nimbus
         </div>
-        <div id="social">
-          <svg class="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg class="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg class="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg class="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg class="button-icon" role="presentation" aria-hidden="true">
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
+        <div class="nav__links">
+          <a href="#">Product</a>
+          <a href="#">Pricing</a>
+          <a href="#">Docs</a>
+          <a href="#">Company</a>
+        </div>
+        <a class="nav__cta" href="#">
+          Sign in
+        </a>
+      </nav>
+
+      <header class="hero">
+        <div class="hero__badge">
+          <span class="dot" />
+          Now shipping v2.0 — faster, smarter, global
+        </div>
+
+        <h1 class="hero__title">
+          Ship products <span class="accent">people love</span>,<br />
+          without the busywork
+        </h1>
+
+        <p class="hero__subtitle">
+          Nimbus gives your team one platform to plan, build, and launch —
+          so you spend less time wiring tools together and more time
+          shipping.
+        </p>
+
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="#">
+            Start free trial
+          </a>
+          <a class="btn btn--ghost" href="#">
+            Book a demo
+          </a>
+        </div>
+      </header>
+
+      <section class="trust">
+        <p class="trust__label">Trusted at global scale</p>
+        <div class="trust__grid">
+          {stats.map((stat) => (
+            <div class="trust__stat" key={stat.label}>
+              <strong>{stat.value}</strong>
+              <span>{stat.label}</span>
+            </div>
+          ))}
         </div>
       </section>
-
-      <div class="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    </div>
   )
 }

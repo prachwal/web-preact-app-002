@@ -7,8 +7,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `npm run dev` — start Vite dev server (HMR)
 - `npm run build` — typecheck via `tsc -b` then production build via `vite build`
 - `npm run preview` — serve the production build locally
+- `npm test` — run tests once (Vitest)
+- `npm run test:watch` — Vitest in watch mode
+- `npx vitest run src/app.test.tsx` — run a single test file
 
-No test runner or linter configured yet. No `npm install` needed if `node_modules` already present.
+No linter configured yet. No `npm install` needed if `node_modules` already present.
+
+## Testing
+
+Vitest + `@testing-library/preact` + jsdom, configured inline in `vite.config.ts` (`test` field). Setup file `src/test/setup.ts` registers `@testing-library/jest-dom` matchers and RTL's `cleanup` after each test. Test files live next to source as `*.test.tsx`.
 
 ## Architecture
 

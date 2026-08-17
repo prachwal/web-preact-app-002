@@ -1,0 +1,71 @@
+@use 'tokens' as t;
+
+:root {
+  --ink: #{t.$ink};
+  --ink-soft: #{t.$ink-soft};
+  --paper: #{t.$paper};
+  --surface: #{t.$surface};
+  --border: #{t.$border};
+
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ink: #{t.$ink-dk};
+    --ink-soft: #{t.$ink-soft-dk};
+    --paper: #{t.$paper-dk};
+    --surface: #{t.$surface-dk};
+    --border: #{t.$border-dk};
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font: 16px/1.5 t.$font-sans;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+img,
+svg {
+  display: block;
+  max-width: 100%;
+}
