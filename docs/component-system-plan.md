@@ -471,9 +471,9 @@ component/variant/theme.)*
   - [x] Parts: `.select`
   - [x] States: `[data-invalid]`, `[disabled]`
   - [x] Tokens: `--select-border`, `--select-bg`
-  - [x] Props: native `<select>` passthrough + controllable pattern, `options` convenience prop
+  - [x] Props: native `<select>` passthrough + controllable pattern, `options` convenience prop, `placeholder` *(added after a visual QA pass found an unselected `Select` renders completely blank without one — a native `<select>` has no `Input`/`Textarea`-style placeholder of its own; see the `Select.tsx` comment on why the placeholder `<option>` must not also get `hidden`)*
   - [x] A11y: native `<select>` — defers listbox a11y to the browser, no custom popup at this tier
-  - [x] Tests: option list renders, change fires `onValueChange` *(RTL's `fireEvent.change` doesn't reliably reach a `<select>`'s change listener in this project's jsdom version — the test dispatches manually instead; see the `ponytail:` comment in `Select.test.tsx`)*
+  - [x] Tests: option list renders, change fires `onValueChange` *(RTL's `fireEvent.change` doesn't reliably reach a `<select>`'s change listener in this project's jsdom version — the test dispatches manually instead; see the `ponytail:` comment in `Select.test.tsx`)*, placeholder option shown and disabled when unselected
 - [x] **`Field`** (organism) — label/hint/error wrapper composing an atom control
   - [x] Parts: `.field`, `.field__label`, `.field__hint`, `.field__error`
   - [x] States: `[data-invalid]` (propagates `aria-invalid`/`aria-describedby` to the wrapped control via `cloneElement`)

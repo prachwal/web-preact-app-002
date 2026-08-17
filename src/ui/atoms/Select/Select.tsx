@@ -7,7 +7,18 @@ import styles from './Select.module.scss'
 import type { SelectProps } from './Select.types'
 
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select(
-  { value, defaultValue = '', onValueChange, invalid, options, className, onChange, children, ...rest },
+  {
+    value,
+    defaultValue = '',
+    onValueChange,
+    invalid,
+    options,
+    placeholder,
+    className,
+    onChange,
+    children,
+    ...rest
+  },
   ref,
 ) {
   const [current, setCurrent, isControlled] = useControllableState({
@@ -38,6 +49,11 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(function Select
       }}
       {...rest}
     >
+      {placeholder && (
+        <option value="" disabled>
+          {placeholder}
+        </option>
+      )}
       {options
         ? options.map((option) => (
             <option key={option.value} value={option.value} disabled={option.disabled}>

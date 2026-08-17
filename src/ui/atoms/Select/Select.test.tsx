@@ -30,4 +30,14 @@ describe('Select', () => {
     changeSelectValue(screen.getByRole('combobox', { name: 'choice' }) as HTMLSelectElement, 'b')
     expect(onValueChange).toHaveBeenCalledWith('b')
   })
+
+  it('shows a disabled placeholder option when nothing is selected yet', () => {
+    // regression: with no value/defaultValue matching a real option, a
+    // native <select> just renders blank (selectedIndex -1) — no legible
+    // empty state, unlike Input/Textarea's `placeholder`
+    render(<Select options={options} placeholder="Pick one…" aria-label="choice" />)
+    const select = screen.getByRole('combobox', { name: 'choice' }) as HTMLSelectElement
+    expect(select.selectedOptions[0]).toHaveTextContent('Pick one…')
+    expect(screen.getByText('Pick one…')).toBeDisabled()
+  })
 })

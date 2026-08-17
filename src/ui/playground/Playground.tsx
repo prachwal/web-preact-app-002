@@ -35,9 +35,12 @@ const tones = ['neutral', 'accent', 'danger'] as const
 const sizes = ['sm', 'md', 'lg'] as const
 const badgeTones = ['neutral', 'accent', 'success', 'warning', 'danger'] as const
 
+// One Section per component (not grouped by tier) so each one is a stable,
+// independent target for both a human scanning the page and the
+// per-component visual-regression tests in e2e/components.spec.ts.
 function Section({ title, children }: { title: string; children: ComponentChildren }) {
   return (
-    <Box as="section" className={styles.section}>
+    <Box as="section" className={styles.section} data-component={title}>
       <Text as="h2" size="lg" weight="bold" className={styles.sectionTitle}>
         {title}
       </Text>
@@ -73,6 +76,20 @@ export function Playground() {
           </Stack>
         </Stack>
 
+        <Section title="Box">
+          <Stack direction="row" gap={3} align="center">
+            <Box as="span" className={styles.boxDemo}>
+              as=&quot;span&quot;
+            </Box>
+            <Box as="div" className={styles.boxDemo}>
+              as=&quot;div&quot;
+            </Box>
+            <Box as="a" href="#box" className={styles.boxDemo}>
+              as=&quot;a&quot;
+            </Box>
+          </Stack>
+        </Section>
+
         <Section title="Text">
           <Stack gap={2}>
             <Text size="lg" weight="bold">
@@ -83,6 +100,16 @@ export function Playground() {
               Small muted text
             </Text>
             <Text tone="danger">Danger tone text</Text>
+          </Stack>
+        </Section>
+
+        <Section title="Badge">
+          <Stack direction="row" gap={3} align="center">
+            {badgeTones.map((tone) => (
+              <Badge key={tone} tone={tone}>
+                {tone}
+              </Badge>
+            ))}
           </Stack>
         </Section>
 
@@ -111,16 +138,6 @@ export function Playground() {
           </Stack>
         </Section>
 
-        <Section title="Badge">
-          <Stack direction="row" gap={3} align="center">
-            {badgeTones.map((tone) => (
-              <Badge key={tone} tone={tone}>
-                {tone}
-              </Badge>
-            ))}
-          </Stack>
-        </Section>
-
         <Section title="Stack">
           <Stack gap={3}>
             <Stack direction="row" gap={2} className={styles.swatchRow}>
@@ -135,65 +152,86 @@ export function Playground() {
           </Stack>
         </Section>
 
-        <Section title="Form controls (NORMAL)">
-          <Stack gap={4}>
-            <Field label="Email" hint="We'll never share it">
-              <Input placeholder="you@example.com" />
-            </Field>
-            <Field label="Bio" error="Required">
-              <Textarea rows={3} placeholder="A short bio…" />
-            </Field>
-            <Field label="Team">
-              <Select
-                options={[
-                  { value: 'design', label: 'Design' },
-                  { value: 'eng', label: 'Engineering' },
-                ]}
-              />
-            </Field>
-            <Stack direction="row" gap={3} align="center">
-              <Checkbox
-                aria-label="Accept terms"
-                checked={checked}
-                onCheckedChange={setChecked}
-              />
-              <Text size="sm">Accept terms</Text>
-            </Stack>
-            <Stack direction="row" gap={3} align="center">
-              <Switch aria-label="Notifications" checked={notify} onCheckedChange={setNotify} />
-              <Text size="sm">Notifications {notify ? 'on' : 'off'}</Text>
-            </Stack>
-          </Stack>
+        <Section title="Grid">
+          <Grid columns={4} gap={2}>
+            {[1, 2, 3, 4].map((n) => (
+              <div key={n} class={styles.swatch} />
+            ))}
+          </Grid>
         </Section>
 
-        <Section title="Layout primitives (NORMAL)">
-          <Stack gap={4}>
-            <Grid columns={4} gap={2}>
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} class={styles.swatch} />
-              ))}
-            </Grid>
+        <Section title="Container">
+          <Container width="sm" className={styles.containerDemo}>
+            <div class={styles.swatch} />
+          </Container>
+        </Section>
+
+        <Section title="Divider">
+          <Stack gap={3}>
+            <Text size="sm">Above</Text>
             <Divider />
-            <Container width="sm" className={styles.containerDemo}>
-              <div class={styles.swatch} />
-            </Container>
+            <Text size="sm">Below</Text>
           </Stack>
         </Section>
 
-        <Section title="Overlays (NORMAL)">
-          <Stack direction="row" gap={6} align="center">
-            <Tooltip content="A helpful hint">
-              <Button size="sm" tone="neutral">
-                Hover or focus me
-              </Button>
-            </Tooltip>
-            <Popover trigger={<Button size="sm">Open popover</Button>}>
-              <Text size="sm">Popover content — Tab traps focus, click outside or Escape closes.</Text>
-            </Popover>
+        <Section title="Field">
+          <Field label="Email" hint="We'll never share it">
+            <Input placeholder="you@example.com" />
+          </Field>
+        </Section>
+
+        <Section title="Input">
+          <Stack gap={3}>
+            <Input placeholder="Default" />
+            <Input invalid placeholder="Invalid" />
+            <Input disabled placeholder="Disabled" />
           </Stack>
         </Section>
 
-        <Section title="Tabs (PREMIUM)">
+        <Section title="Textarea">
+          <Textarea rows={3} placeholder="A short bio…" />
+        </Section>
+
+        <Section title="Select">
+          <Select
+            aria-label="Team"
+            placeholder="Select a team…"
+            options={[
+              { value: 'design', label: 'Design' },
+              { value: 'eng', label: 'Engineering' },
+            ]}
+          />
+        </Section>
+
+        <Section title="Checkbox">
+          <Stack direction="row" gap={3} align="center">
+            <Checkbox aria-label="Accept terms" checked={checked} onCheckedChange={setChecked} />
+            <Text size="sm">Accept terms</Text>
+          </Stack>
+        </Section>
+
+        <Section title="Switch">
+          <Stack direction="row" gap={3} align="center">
+            <Switch aria-label="Notifications" checked={notify} onCheckedChange={setNotify} />
+            <Text size="sm">Notifications {notify ? 'on' : 'off'}</Text>
+          </Stack>
+        </Section>
+
+        <Section title="Tooltip">
+          <Tooltip content="A helpful hint">
+            <Button size="sm" tone="neutral">
+              Hover or focus me
+            </Button>
+          </Tooltip>
+        </Section>
+
+        <Section title="Popover">
+          <Popover trigger={<Button size="sm">Open popover</Button>}>
+            <Text size="sm">Popover content — Tab traps focus, click outside or Escape closes.</Text>
+          </Popover>
+        </Section>
+
+        <Section title="Tabs">
           <Tabs.Root defaultValue="account">
             <Tabs.List>
               <Tabs.Trigger value="account">Account</Tabs.Trigger>
@@ -211,59 +249,60 @@ export function Playground() {
           </Tabs.Root>
         </Section>
 
-        <Section title="Dialog & Menu (PREMIUM)">
-          <Stack direction="row" gap={4} align="center">
-            <Dialog.Root>
-              <Dialog.Trigger asChild>
-                <Button size="sm">Open dialog</Button>
-              </Dialog.Trigger>
-              <Dialog.Content>
-                <Dialog.Close />
-                <Dialog.Title>Delete item?</Dialog.Title>
-                <Text size="sm" tone="fg-muted">
-                  This can't be undone. Focus is trapped here — try Tab.
-                </Text>
-                <Stack direction="row" gap={2} className={styles.dialogActions}>
-                  <Button size="sm" tone="danger">
-                    Delete
-                  </Button>
-                </Stack>
-              </Dialog.Content>
-            </Dialog.Root>
-
-            <Menu.Root>
-              <Menu.Trigger asChild>
-                <Button size="sm" tone="neutral">
-                  Actions ▾
+        <Section title="Dialog">
+          <Dialog.Root>
+            <Dialog.Trigger asChild>
+              <Button size="sm">Open dialog</Button>
+            </Dialog.Trigger>
+            <Dialog.Content>
+              <Dialog.Close />
+              <Dialog.Title>Delete item?</Dialog.Title>
+              <Text size="sm" tone="fg-muted">
+                This can't be undone. Focus is trapped here — try Tab.
+              </Text>
+              <Stack direction="row" gap={2} className={styles.dialogActions}>
+                <Button size="sm" tone="danger">
+                  Delete
                 </Button>
-              </Menu.Trigger>
-              <Menu.Content>
-                <Menu.Item onSelect={() => toast.show({ title: 'Renamed', type: 'success' })}>
-                  Rename
-                </Menu.Item>
-                <Menu.Item onSelect={() => toast.show({ title: 'Duplicated' })}>Duplicate</Menu.Item>
-                <Menu.Item disabled>Archive (disabled)</Menu.Item>
-              </Menu.Content>
-            </Menu.Root>
-          </Stack>
+              </Stack>
+            </Dialog.Content>
+          </Dialog.Root>
         </Section>
 
-        <Section title="Combobox & Toast (PREMIUM)">
-          <Stack gap={4} align="start">
-            <Combobox options={fruitOptions} aria-label="Favorite fruit" placeholder="Type to filter…" />
-            <Button
-              size="sm"
-              onClick={() =>
-                toast.show({
-                  title: 'Saved',
-                  description: 'Your changes were saved.',
-                  type: 'info',
-                })
-              }
-            >
-              Fire a toast
-            </Button>
-          </Stack>
+        <Section title="Menu">
+          <Menu.Root>
+            <Menu.Trigger asChild>
+              <Button size="sm" tone="neutral">
+                Actions ▾
+              </Button>
+            </Menu.Trigger>
+            <Menu.Content>
+              <Menu.Item onSelect={() => toast.show({ title: 'Renamed', type: 'success' })}>
+                Rename
+              </Menu.Item>
+              <Menu.Item onSelect={() => toast.show({ title: 'Duplicated' })}>Duplicate</Menu.Item>
+              <Menu.Item disabled>Archive (disabled)</Menu.Item>
+            </Menu.Content>
+          </Menu.Root>
+        </Section>
+
+        <Section title="Combobox">
+          <Combobox options={fruitOptions} aria-label="Favorite fruit" placeholder="Type to filter…" />
+        </Section>
+
+        <Section title="Toast">
+          <Button
+            size="sm"
+            onClick={() =>
+              toast.show({
+                title: 'Saved',
+                description: 'Your changes were saved.',
+                type: 'info',
+              })
+            }
+          >
+            Fire a toast
+          </Button>
         </Section>
       </Box>
 

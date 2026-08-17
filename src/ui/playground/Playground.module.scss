@@ -93,6 +93,19 @@
   border: 1px dashed var(--color-border);
 }
 
+// Box itself renders no styling (BASIC's "pure passthrough" contract) — this
+// border/padding is playground-only, purely to make `as` visible in a
+// screenshot, not something Box provides.
+.boxDemo {
+  display: inline-flex;
+  padding: var(--space-2) var(--space-3);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
+
 .dialogActions {
   margin-top: var(--space-4);
   justify-content: flex-end;
