@@ -1,0 +1,17 @@
+// Every src/ui component that renders a raw <button> is expected to reset
+// its own background/border (Button, Switch, Checkbox's icon wrapper, …) —
+// easy to forget (Tabs.__trigger and Dialog.__close both did, producing the
+// browser's native gray/outset button chrome — invisible-looking white text
+// on a light-gray background in dark mode). One reset here removes the
+// whole bug class instead of patching each offending component; anything
+// that sets its own background/border via a class selector still wins on
+// specificity over this bare-element one.
+button {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
