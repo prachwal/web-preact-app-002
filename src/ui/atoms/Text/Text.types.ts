@@ -1,4 +1,4 @@
-import type { ComponentChildren, JSX } from 'preact'
+import type { ComponentChildren, CSSProperties, HTMLAttributes, JSX } from 'preact'
 
 export type TextSize = 'sm' | 'md' | 'lg'
 export type TextWeight = 'regular' | 'medium' | 'bold'
@@ -10,9 +10,9 @@ export interface TextOwnProps {
   tone?: TextTone
   as?: keyof JSX.IntrinsicElements
   className?: string
-  style?: JSX.CSSProperties
+  style?: CSSProperties
   children?: ComponentChildren
 }
 
 export type TextProps = TextOwnProps &
-  Omit<JSX.HTMLAttributes<HTMLElement>, keyof TextOwnProps>
+  Omit<HTMLAttributes<HTMLElement>, keyof TextOwnProps>

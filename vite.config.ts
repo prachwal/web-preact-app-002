@@ -6,6 +6,13 @@ import preact from '@preact/preset-vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [preact()],
+  resolve: {
+    alias: {
+      // keep in sync with tsconfig.app.json's "paths"
+      '@ui': resolve(import.meta.dirname, 'src/ui'),
+      '@': resolve(import.meta.dirname, 'src'),
+    },
+  },
   build: {
     rollupOptions: {
       input: {

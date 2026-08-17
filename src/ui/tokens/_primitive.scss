@@ -1,5 +1,20 @@
 // Primitive tokens — raw values only, no meaning attached.
 // The semantic layer (_semantic.scss) is the only place these get assigned a role.
+@use 'sass:math';
+
+/// Mobile-first fluid value: `clamp(min, scales with viewport, max)`.
+/// No breakpoint needed — the browser interpolates continuously between
+/// $min-vw (mobile) and $max-vw (desktop), which *is* the modern
+/// replacement for `@media (min-width: …)` step changes.
+@function fluid($min-px, $max-px, $min-vw: 375, $max-vw: 1280) {
+  $slope: math.div($max-px - $min-px, $max-vw - $min-vw);
+  $intercept-px: $min-px - $slope * $min-vw;
+  @return clamp(
+    #{math.div($min-px, 16)}rem,
+    #{math.div($intercept-px, 16)}rem + #{$slope * 100}vw,
+    #{math.div($max-px, 16)}rem
+  );
+}
 
 $gray-0: #ffffff;
 $gray-50: #f9fafb;

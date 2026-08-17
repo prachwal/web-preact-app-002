@@ -1,6 +1,9 @@
 .page {
   min-height: 100svh;
-  padding: var(--space-8) var(--space-6) var(--space-24);
+  // mobile-first fluid gutters — scale continuously with the viewport
+  // instead of jumping at a breakpoint
+  padding-inline: clamp(1rem, 4vw, 3rem);
+  padding-block: clamp(1.5rem, 6vw, 4rem) clamp(2rem, 10vw, 6rem);
   background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-sans);
@@ -14,7 +17,7 @@
 .section {
   max-width: 720px;
   margin: 0 auto var(--space-8);
-  padding: var(--space-6);
+  padding: clamp(1rem, 3vw, 1.5rem);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);

@@ -1,5 +1,4 @@
-import type { ComponentChildren, JSX } from 'preact'
-import type { ButtonHTMLAttributes } from 'preact/compat'
+import type { ButtonHTMLAttributes, ComponentChildren, CSSProperties } from 'preact'
 
 export type ButtonTone = 'neutral' | 'accent' | 'danger'
 export type ButtonSize = 'sm' | 'md' | 'lg'
@@ -12,7 +11,7 @@ export interface ButtonOwnProps {
   /** escape hatch for code-driven appearance, merged after variant classes */
   className?: string
   /** escape hatch for one-off CSS var overrides, e.g. { '--button-bg': '#111' } */
-  style?: JSX.CSSProperties
+  style?: CSSProperties
   children?: ComponentChildren
 }
 

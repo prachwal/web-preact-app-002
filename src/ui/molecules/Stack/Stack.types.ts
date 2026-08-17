@@ -1,5 +1,5 @@
-import type { ComponentChildren, JSX } from 'preact'
-import type { SpaceToken } from '../../tokens/tokens'
+import type { ComponentChildren, CSSProperties, HTMLAttributes, JSX } from 'preact'
+import type { SpaceToken } from '@ui/tokens/tokens'
 
 export type StackDirection = 'row' | 'column'
 export type StackAlign = 'start' | 'center' | 'end' | 'stretch'
@@ -12,9 +12,9 @@ export interface StackOwnProps {
   gap?: SpaceToken
   as?: keyof JSX.IntrinsicElements
   className?: string
-  style?: JSX.CSSProperties
+  style?: CSSProperties
   children?: ComponentChildren
 }
 
 export type StackProps = StackOwnProps &
-  Omit<JSX.HTMLAttributes<HTMLElement>, keyof StackOwnProps>
+  Omit<HTMLAttributes<HTMLElement>, keyof StackOwnProps>

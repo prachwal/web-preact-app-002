@@ -83,15 +83,15 @@
 
 .button--size-sm {
   padding: var(--space-1) var(--space-3);
-  font-size: 0.8125rem;
+  font-size: var(--font-size-sm);
 }
 
 .button--size-md {
   padding: var(--space-2) var(--space-4);
-  font-size: 0.9375rem;
+  font-size: var(--font-size-md);
 }
 
 .button--size-lg {
   padding: var(--space-3) var(--space-6);
-  font-size: 1rem;
+  font-size: var(--font-size-lg);
 }

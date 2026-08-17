@@ -1,5 +1,5 @@
-import { cx } from '../../utils/cx'
-import { variant } from '../../utils/variant'
+import { cx } from '@ui/utils/cx'
+import { variant } from '@ui/utils/variant'
 import styles from './Badge.module.scss'
 import type { BadgeProps } from './Badge.types'
 

@@ -20,6 +20,11 @@
   --font-sans: #{p.$font-sans};
   --font-mono: #{p.$font-mono};
 
+  // fluid type scale — mobile-first clamp(), no breakpoints
+  --font-size-sm: #{p.fluid(13, 14)};
+  --font-size-md: #{p.fluid(15, 16)};
+  --font-size-lg: #{p.fluid(18, 22)};
+
   @each $key, $value in p.$radius-scale {
     --radius-#{$key}: #{$value};
   }

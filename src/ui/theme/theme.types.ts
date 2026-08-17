@@ -1,5 +1,5 @@
 import type { ComponentChildren } from 'preact'
-import type { ThemeOverride, ThemeTokens } from '../tokens/tokens'
+import type { ThemeOverride, ThemeTokens } from '@ui/tokens/tokens'
 
 export type ThemeMode = 'light' | 'dark' | 'system'
 

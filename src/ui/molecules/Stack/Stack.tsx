@@ -1,6 +1,7 @@
 import { forwardRef } from 'preact/compat'
-import { cx } from '../../utils/cx'
-import { variant } from '../../utils/variant'
+import { cx } from '@ui/utils/cx'
+import { asPolymorphic } from '@ui/utils/polymorphic'
+import { variant } from '@ui/utils/variant'
 import styles from './Stack.module.scss'
 import type { StackProps } from './Stack.types'
 
@@ -29,12 +30,10 @@ const stackVariant = variant({
 
 /** Flex layout primitive — direction/align/justify as props, gap from the space scale. */
 export const Stack = forwardRef<HTMLElement, StackProps>(function Stack(
-  { as: Component = 'div', direction, align, justify, gap, className, style, ...rest },
+  { as: tag = 'div', direction, align, justify, gap, className, style, ...rest },
   ref,
 ) {
-  // `as` makes the JSX tag dynamic — TS can't narrow the resulting
-  // intrinsic-element union, so this one boundary is intentionally untyped.
-  const Tag = Component as any
+  const Tag = asPolymorphic(tag)
   return (
     <Tag
       ref={ref}

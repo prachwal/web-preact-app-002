@@ -1,6 +1,6 @@
 import { forwardRef } from 'preact/compat'
-import { cx } from '../../utils/cx'
-import { variant } from '../../utils/variant'
+import { cx } from '@ui/utils/cx'
+import { variant } from '@ui/utils/variant'
 import styles from './Button.module.scss'
 import type { ButtonProps } from './Button.types'
 
