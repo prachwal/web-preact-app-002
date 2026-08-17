@@ -1,0 +1,22 @@
+.container {
+  width: 100%;
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+  max-width: var(--container-max-width, none);
+}
+
+.container--width-sm {
+  --container-max-width: 640px;
+}
+
+.container--width-md {
+  --container-max-width: 768px;
+}
+
+.container--width-lg {
+  --container-max-width: 1024px;
+}
+
+.container--width-full {
+  --container-max-width: none;
+}

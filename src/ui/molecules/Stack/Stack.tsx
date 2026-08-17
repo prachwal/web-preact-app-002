@@ -1,9 +1,8 @@
-import { forwardRef } from 'preact/compat'
 import { cx } from '@ui/utils/cx'
-import { asPolymorphic } from '@ui/utils/polymorphic'
+import { asPolymorphic, polymorphicForwardRef } from '@ui/utils/polymorphic'
 import { variant } from '@ui/utils/variant'
 import styles from './Stack.module.scss'
-import type { StackProps } from './Stack.types'
+import type { StackOwnProps } from './Stack.types'
 
 const stackVariant = variant({
   base: 'stack',
@@ -29,7 +28,7 @@ const stackVariant = variant({
 })
 
 /** Flex layout primitive — direction/align/justify as props, gap from the space scale. */
-export const Stack = forwardRef<HTMLElement, StackProps>(function Stack(
+export const Stack = polymorphicForwardRef<StackOwnProps>(function Stack(
   { as: tag = 'div', direction, align, justify, gap, className, style, ...rest },
   ref,
 ) {

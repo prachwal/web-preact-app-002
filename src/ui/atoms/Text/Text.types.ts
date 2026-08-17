@@ -1,4 +1,5 @@
-import type { ComponentChildren, CSSProperties, HTMLAttributes, JSX } from 'preact'
+import type { ComponentChildren, CSSProperties } from 'preact'
+import type { ElementTag, PolymorphicProps } from '@ui/utils/polymorphic'
 
 export type TextSize = 'sm' | 'md' | 'lg'
 export type TextWeight = 'regular' | 'medium' | 'bold'
@@ -8,11 +9,9 @@ export interface TextOwnProps {
   size?: TextSize
   weight?: TextWeight
   tone?: TextTone
-  as?: keyof JSX.IntrinsicElements
   className?: string
   style?: CSSProperties
   children?: ComponentChildren
 }
 
-export type TextProps = TextOwnProps &
-  Omit<HTMLAttributes<HTMLElement>, keyof TextOwnProps>
+export type TextProps<E extends ElementTag = 'span'> = PolymorphicProps<E, TextOwnProps>

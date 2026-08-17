@@ -1,9 +1,8 @@
-import { forwardRef } from 'preact/compat'
 import { cx } from '@ui/utils/cx'
-import { asPolymorphic } from '@ui/utils/polymorphic'
+import { asPolymorphic, polymorphicForwardRef } from '@ui/utils/polymorphic'
 import { variant } from '@ui/utils/variant'
 import styles from './Text.module.scss'
-import type { TextProps } from './Text.types'
+import type { TextOwnProps } from './Text.types'
 
 const textVariant = variant({
   base: 'text',
@@ -24,7 +23,7 @@ const textVariant = variant({
 })
 
 /** Typography primitive. Renders a `<span>` by default. */
-export const Text = forwardRef<HTMLElement, TextProps>(function Text(
+export const Text = polymorphicForwardRef<TextOwnProps>(function Text(
   { as: tag = 'span', size, weight, tone, className, ...rest },
   ref,
 ) {

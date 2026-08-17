@@ -1,0 +1,41 @@
+.switch {
+  position: relative;
+  width: 40px;
+  height: 24px;
+  flex: none;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--switch-border, var(--color-border));
+  background: var(--switch-bg, var(--color-bg-subtle));
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  &[data-state='checked'] {
+    --switch-bg: var(--color-accent);
+    --switch-border: var(--color-accent);
+  }
+}
+
+.switch__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--switch-thumb-bg, #ffffff);
+  transition: transform 0.15s ease;
+
+  .switch[data-state='checked'] & {
+    transform: translateX(16px);
+  }
+}

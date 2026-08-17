@@ -1,0 +1,16 @@
+.divider {
+  border: none;
+  background: var(--divider-color, var(--color-border));
+}
+
+.divider--orientation-horizontal {
+  width: 100%;
+  height: 1px;
+  margin-block: var(--space-2);
+}
+
+.divider--orientation-vertical {
+  width: 1px;
+  align-self: stretch;
+  margin-inline: var(--space-2);
+}

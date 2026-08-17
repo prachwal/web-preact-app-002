@@ -56,24 +56,36 @@ src/ui/                          # ← the whole system; app code never reaches
 
   utils/
     cx.ts                        # class-name join (tiny, no dep)
-    variant.ts                   # BASIC-tier CVA-shaped helper
-    polymorphic.ts                # asPolymorphic() — types a dynamic `as` tag without `any`
-    mergeRefs.ts
-    useControllableState.ts
-    useId.ts
+    variant.ts                   # CVA-shaped helper, still hand-rolled (see §5)
+    polymorphic.ts                # PolymorphicProps<E,P> + polymorphicForwardRef() — no `any`
+    mergeRefs.ts                 # combines a forwarded ref with an internal one
+    useControllableState.ts      # controlled/uncontrolled pattern, returns isControlled too
+    useDisclosure.ts             # open/show/hide/toggle — shared by Popover, later Dialog/Menu
+    useFocusTrap.ts              # Tab-trap + focus-restore — shared by Popover, later Dialog/Menu
+                                  # (no useId.ts — Preact ships one natively in preact/hooks)
 
   atoms/                         # smallest, single-purpose, no internal sub-parts
     Box/
     Text/
     Badge/
+    Input/
+    Textarea/
+    Checkbox/
+    Switch/
+    Select/
+    Grid/
+    Container/
+    Divider/
 
   molecules/                     # combine atoms/state into one reusable control
     Stack/
     Button/
+    Tooltip/
+    Popover/
 
-  organisms/                     # NORMAL/PREMIUM — multi-part compound components
-                                  # (Field, Tabs, Dialog, Menu, …); not created until
-                                  # the first one lands, per YAGNI
+  organisms/                     # multi-part compound components
+    Field/                       # label/hint/error wrapper — the first one, added at NORMAL
+                                  # (Tabs, Dialog, Menu, … land here at PREMIUM)
 
   playground/                    # dev-only visual gallery, not shipped in the package
     Playground.tsx
@@ -141,17 +153,41 @@ export function variant<V extends VariantMap>(config: VariantConfig<V>) {
 
 ```ts
 // utils/polymorphic.ts — types a dynamic `as` tag without `any`
+import { forwardRef } from 'preact/compat'
 import type { FunctionComponent, HTMLAttributes, JSX, Ref } from 'preact'
 
 export type ElementTag = keyof JSX.IntrinsicElements
 
 // The common prop shape every intrinsic element accepts. TS can't resolve
 // the full IntrinsicElements union for a runtime string, so this narrows
-// the render call instead of erasing its type with `any`.
-export type PolymorphicElementProps = HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement> }
+// the render call instead of erasing its type with `any`. Parametrized on
+// `Element` (not `HTMLElement`) so it matches polymorphicForwardRef's
+// `Ref<Element>` exactly — mixing the two intersects into an unsatisfiable
+// ref type.
+export type PolymorphicElementProps = HTMLAttributes<Element>
 
 export function asPolymorphic(tag: ElementTag): FunctionComponent<PolymorphicElementProps> {
   return tag as unknown as FunctionComponent<PolymorphicElementProps>
+}
+
+// Full per-element polymorphic props: own props, `as`, and every attribute
+// the chosen intrinsic element accepts. `ref` is the shared `Element` type,
+// not a per-tag one — see the ponytail note in the source for why.
+export type PolymorphicProps<E extends ElementTag, P = object> = P & { as?: E } & Omit<
+    JSX.IntrinsicElements[E],
+    keyof P | 'as' | 'ref'
+  >
+
+// Wraps a generic render function in forwardRef, then casts the result to a
+// generic call signature — forwardRef's own type fixes one concrete P, so
+// it can't express "props depend on the `as` the caller passes." One
+// explicit, documented cast; every polymorphic component uses it.
+export function polymorphicForwardRef<P>(
+  render: (props: P & { as?: ElementTag }, ref: Ref<Element>) => JSX.Element,
+) {
+  return forwardRef<Element, P & { as?: ElementTag }>(render) as unknown as <E extends ElementTag = 'div'>(
+    props: PolymorphicProps<E, P> & { ref?: Ref<Element> },
+  ) => JSX.Element
 }
 ```
 
@@ -180,16 +216,10 @@ export type ButtonProps = ButtonOwnProps &
   Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof ButtonOwnProps>
 ```
 
-`Box`/`Stack`/`Text` use the lighter `asPolymorphic()` shape above rather
-than a full generic `PolymorphicProps<E, P>` (the classic Radix `asChild` /
-Chakra `as` shape below) — that generic rollout, with per-element prop
-inference, is a NORMAL-tier task once more components need it:
-
-```ts
-// aspirational — NORMAL tier
-export type PolymorphicProps<E extends keyof JSX.IntrinsicElements, P> =
-  P & { as?: E } & Omit<JSX.IntrinsicElements[E], keyof P | 'as'>
-```
+`Box`/`Stack`/`Text`/`Grid`/`Container` all render through
+`polymorphicForwardRef` + `PolymorphicProps<E, P>` above (the classic Radix
+`asChild` / Chakra `as` shape) — rolled out at NORMAL, replacing BASIC's
+lighter `asPolymorphic()`-only version.
 
 ```ts
 // theme/theme.types.ts — provider contract
@@ -289,6 +319,34 @@ folder boundary goes through the alias — `@ui/utils/cx`, never
 - Layout gutters (e.g. `Playground.module.scss`'s page padding) use the same
   `clamp()` technique inline where a reusable token isn't warranted yet.
 
+### Controlled form elements
+
+Native form elements (`<input>`, `<textarea>`, `<select>`, a checkbox) mutate
+their own DOM property (`.value`/`.checked`) on user interaction regardless
+of props — and Preact skips reapplying a prop whose vnode value hasn't
+changed since the last render. A **controlled** instance (`value`/`checked`
+prop present, caller doesn't update it in `onChange`) therefore doesn't
+re-render at all, so there's no later moment to correct the native mutation.
+
+Fix, used consistently in `Input`/`Textarea`/`Select`/`Checkbox`: revert the
+native property **synchronously inside the event handler itself**, using
+`useControllableState`'s third return value:
+
+```ts
+const [current, setCurrent, isControlled] = useControllableState({ value, defaultValue, onChange })
+
+onInput={(event) => {
+  const target = event.target as HTMLInputElement
+  setCurrent(target.value)
+  if (isControlled) target.value = current // current = the old, still-correct prop value
+  onInput?.(event)
+}}
+```
+
+A `useLayoutEffect` force-sync (`mergeRefs` an internal ref, then set the DOM
+property whenever it's out of sync with `current`) is kept alongside this —
+it's what catches a *parent-driven* value change, which does re-render.
+
 ---
 
 ## 6. BASIC — foundation
@@ -358,89 +416,98 @@ component/variant/theme.)*
 
 ### NORMAL infrastructure
 
-- [ ] Component-scoped CSS vars for every component so per-instance code overrides work everywhere, not just `Button`
-- [ ] `forwardRef` (via `preact/compat`) + the full generic `PolymorphicProps<E, P>` (§3) rolled out to all components, replacing the lighter `asPolymorphic()` shape
-- [ ] `useControllableState`, `useId` — controlled/uncontrolled pattern for form primitives
-- [ ] Variant matrix growing → decide then whether to swap hand-rolled `variant()` for `class-variance-authority`
-- [ ] Extraction dress rehearsal: separate Vite lib-mode build (`vite build --config vite.ui.config.ts`, ESM + `.d.ts`), verify with `npm pack --dry-run`
-- [ ] First `organisms/` component lands (`Field`, wrapping atoms) — folder created at that point, not before
+- [x] Component-scoped CSS vars for every new component (`--input-border`, `--checkbox-bg`, `--switch-bg`, `--select-border`, `--field-label-color`, `--tooltip-bg`, `--popover-bg`, `--grid-gap`, `--container-max-width`, `--divider-color`)
+- [x] `forwardRef` (via `preact/compat`) + the full generic `PolymorphicProps<E, P>` (§3) rolled out to every *polymorphic* component (`Box`, `Stack`, `Text`, `Grid`, `Container`) via the new `polymorphicForwardRef()` helper, replacing BASIC's `asPolymorphic()`-only version. Native form elements (`Input`, `Textarea`, `Checkbox`, `Switch`, `Select`) aren't polymorphic by design — plain `forwardRef<Element, Props>` covers them.
+- [x] `useControllableState` (now also returns `isControlled` — see §5's "Controlled form elements") — controlled/uncontrolled pattern for form primitives
+- [ ] ~~`useId`~~ — dropped; Preact ships `useId` natively in `preact/hooks`, a wrapper would be pure duplication
+- [x] Variant matrix decision: **stayed hand-rolled** — 11 new components didn't grow the matrix enough to justify `class-variance-authority` as a real dependency
+- [ ] Extraction dress rehearsal: separate Vite lib-mode build, `npm pack --dry-run` — still deferred to whenever actual extraction is scheduled, no component code depends on it
+- [x] First `organisms/` component lands (`Field`, composing an atom control via `cloneElement`)
+- [x] `utils/useDisclosure` + `utils/useFocusTrap` added (used by `Popover`; reusable by PREMIUM's `Dialog`/`Menu`) — not in the original infra list, needed for Popover's a11y requirements
+- [x] `utils/mergeRefs` added — merges a forwarded ref with an internal one (needed wherever a component both forwards a ref and reads the DOM node itself: `Checkbox`'s indeterminate flag, every controlled form element's sync effect)
 
 ### NORMAL components
 
-- [ ] **`Input`** (atom)
-  - [ ] Parts: `.input`
-  - [ ] States: `[data-invalid]`, `[disabled]`
-  - [ ] Tokens: `--input-border`, `--input-bg`, `--input-fg`
-  - [ ] Props: `value`/`defaultValue` (via `useControllableState`), `onValueChange`, `invalid`, `disabled`, `size`
-  - [ ] A11y: native `<input>`; label association (`aria-describedby`/`aria-invalid`) supplied by `Field`
-  - [ ] Tests: controlled + uncontrolled modes, `invalid` sets `aria-invalid`
-- [ ] **`Textarea`** (atom)
-  - [ ] Parts: `.textarea`
-  - [ ] States: `[data-invalid]`, `[disabled]`
-  - [ ] Tokens: `--textarea-border`, `--textarea-bg`
-  - [ ] Props: same controllable pattern as `Input`, plus `rows`
-  - [ ] Tests: same as `Input`, plus `rows` passthrough
-- [ ] **`Checkbox`** (atom)
-  - [ ] Parts: `.checkbox`, `.checkbox__control`, `.checkbox__icon`
-  - [ ] States: `data-state="checked|unchecked|indeterminate"`, `[disabled]`
-  - [ ] Tokens: `--checkbox-bg`, `--checkbox-border`, `--checkbox-check`
-  - [ ] Props: `checked`/`defaultChecked`, `onCheckedChange`, `indeterminate`, `disabled`
-  - [ ] A11y: backed by a real `<input type="checkbox">`, never a `div` faking it; indeterminate set imperatively via ref
-  - [ ] Tests: controlled/uncontrolled, indeterminate sets `aria-checked="mixed"`
-- [ ] **`Switch`** (atom)
-  - [ ] Parts: `.switch`, `.switch__thumb`
-  - [ ] States: `data-state="checked|unchecked"`, `[disabled]`
-  - [ ] Tokens: `--switch-bg`, `--switch-thumb-bg`
-  - [ ] Props: `checked`/`defaultChecked`, `onCheckedChange`, `disabled`
-  - [ ] A11y: `role="switch"` + `aria-checked`, toggles on `Space`
-  - [ ] Tests: keyboard toggle, controlled/uncontrolled
-- [ ] **`Select`** (atom)
-  - [ ] Parts: `.select`
-  - [ ] States: `[data-invalid]`, `[disabled]`
-  - [ ] Tokens: `--select-border`, `--select-bg`
-  - [ ] Props: native `<select>` passthrough + controllable pattern, `options` convenience prop
-  - [ ] A11y: native `<select>` — defers listbox a11y to the browser, no custom popup at this tier
-  - [ ] Tests: option list renders, change fires `onValueChange`
-- [ ] **`Field`** (organism) — label/hint/error wrapper composing an atom control
-  - [ ] Parts: `.field`, `.field__label`, `.field__hint`, `.field__error`
-  - [ ] States: `[data-invalid]` (propagates `aria-invalid`/`aria-describedby` to the wrapped control via context)
-  - [ ] Tokens: `--field-label-color`, `--field-error-color`
-  - [ ] Props: `label`, `hint`, `error`, `required`, `children` (the control)
-  - [ ] A11y: wires `<label for>` and `aria-describedby` automatically
-  - [ ] Tests: error text linked via `aria-describedby`, label linked via `htmlFor`
-- [ ] **`Grid`** (atom)
-  - [ ] Parts: `.grid`
-  - [ ] Variants: `.grid--columns-{1..12}`
-  - [ ] Tokens: `--grid-gap`
-  - [ ] Props: `columns`, `gap`, `as`
-  - [ ] Tests: `columns` modifier applied
-- [ ] **`Container`** (atom)
-  - [ ] Parts: `.container`
-  - [ ] Variants: `.container--width-{sm|md|lg|full}`
-  - [ ] Tokens: `--container-max-width`
-  - [ ] Props: `width`, `as`
-  - [ ] Tests: `width` modifier applied
-- [ ] **`Divider`** (atom)
-  - [ ] Parts: `.divider`
-  - [ ] Variants: `.divider--orientation-{horizontal|vertical}`
-  - [ ] Tokens: `--divider-color`
-  - [ ] Props: `orientation`
-  - [ ] A11y: `role="separator"`
-  - [ ] Tests: orientation modifier applied, role present
-- [ ] **`Tooltip`** (molecule) — trigger + content composition
-  - [ ] Parts: `.tooltip`, `.tooltip__trigger`, `.tooltip__content`, `.tooltip__arrow`
-  - [ ] States: `data-state="open|closed"`
-  - [ ] Tokens: `--tooltip-bg`, `--tooltip-fg`
-  - [ ] Props: `content`, `delay`, `placement`
-  - [ ] A11y: `role="tooltip"`, `aria-describedby` wired from trigger to content, dismisses on `Escape`
-  - [ ] Tests: opens on hover/focus after `delay`, closes on `Escape`, `aria-describedby` present
-- [ ] **`Popover`** (molecule)
-  - [ ] Parts: `.popover`, `.popover__trigger`, `.popover__content`
-  - [ ] States: `data-state="open|closed"` (built on shared `useDisclosure`)
-  - [ ] Tokens: `--popover-bg`, `--popover-border`, `--popover-shadow`
-  - [ ] Props: `open`/`defaultOpen`, `onOpenChange`
-  - [ ] A11y: focus moves into content on open (`useFocusTrap`), returns to trigger on close, closes on outside click / `Escape`
-  - [ ] Tests: focus trap engages, outside click closes, controlled/uncontrolled open state
+- [x] **`Input`** (atom)
+  - [x] Parts: `.input`
+  - [x] States: `[data-invalid]`, `[disabled]`
+  - [x] Tokens: `--input-border`, `--input-bg`, `--input-fg`
+  - [x] Props: `value`/`defaultValue` (via `useControllableState`), `onValueChange`, `invalid`, `disabled`, `size`
+  - [x] A11y: native `<input>`; label association (`aria-describedby`/`aria-invalid`) supplied by `Field`
+  - [x] Tests: controlled + uncontrolled modes, `invalid` sets `aria-invalid`
+- [x] **`Textarea`** (atom)
+  - [x] Parts: `.textarea`
+  - [x] States: `[data-invalid]`, `[disabled]`
+  - [x] Tokens: `--textarea-border`, `--textarea-bg`
+  - [x] Props: same controllable pattern as `Input`, plus `rows`
+  - [x] Tests: same as `Input`, plus `rows` passthrough
+- [x] **`Checkbox`** (atom)
+  - [x] Parts: `.checkbox`, `.checkbox__control`, `.checkbox__icon`
+  - [x] States: `data-state="checked|unchecked|indeterminate"`, `[disabled]`
+  - [x] Tokens: `--checkbox-bg`, `--checkbox-border`, `--checkbox-check`
+  - [x] Props: `checked`/`defaultChecked`, `onCheckedChange`, `indeterminate`, `disabled`
+  - [x] A11y: backed by a real `<input type="checkbox">`, never a `div` faking it; indeterminate set imperatively via ref
+  - [x] Tests: controlled/uncontrolled, indeterminate sets `aria-checked="mixed"`
+- [x] **`Switch`** (atom)
+  - [x] Parts: `.switch`, `.switch__thumb`
+  - [x] States: `data-state="checked|unchecked"`, `[disabled]`
+  - [x] Tokens: `--switch-bg`, `--switch-thumb-bg`
+  - [x] Props: `checked`/`defaultChecked`, `onCheckedChange`, `disabled`
+  - [x] A11y: `role="switch"` + `aria-checked`; rendered as a native `<button>` so `Space`/`Enter` activation comes free, no custom keydown handling needed
+  - [x] Tests: keyboard toggle, controlled/uncontrolled
+- [x] **`Select`** (atom)
+  - [x] Parts: `.select`
+  - [x] States: `[data-invalid]`, `[disabled]`
+  - [x] Tokens: `--select-border`, `--select-bg`
+  - [x] Props: native `<select>` passthrough + controllable pattern, `options` convenience prop
+  - [x] A11y: native `<select>` — defers listbox a11y to the browser, no custom popup at this tier
+  - [x] Tests: option list renders, change fires `onValueChange` *(RTL's `fireEvent.change` doesn't reliably reach a `<select>`'s change listener in this project's jsdom version — the test dispatches manually instead; see the `ponytail:` comment in `Select.test.tsx`)*
+- [x] **`Field`** (organism) — label/hint/error wrapper composing an atom control
+  - [x] Parts: `.field`, `.field__label`, `.field__hint`, `.field__error`
+  - [x] States: `[data-invalid]` (propagates `aria-invalid`/`aria-describedby` to the wrapped control via `cloneElement`)
+  - [x] Tokens: `--field-label-color`, `--field-error-color`
+  - [x] Props: `label`, `hint`, `error`, `required`, `children` (the control)
+  - [x] A11y: wires `<label for>` and `aria-describedby` automatically
+  - [x] Tests: error text linked via `aria-describedby`, label linked via `htmlFor`, **and** a regression test asserting `data-invalid` is *absent* (not `"false"`) when there's no error — `data-invalid={Boolean(error)}` was setting the attribute unconditionally, which still matches the presence-based `[data-invalid]` CSS selector; caught visually in the playground before it shipped
+- [x] **`Grid`** (atom)
+  - [x] Parts: `.grid`
+  - [x] Variants: `.grid--columns-{1..12}` (generated via a Sass `@for` loop)
+  - [x] Tokens: `--grid-gap`
+  - [x] Props: `columns`, `gap`, `as`
+  - [x] Tests: `columns` modifier applied
+- [x] **`Container`** (atom)
+  - [x] Parts: `.container`
+  - [x] Variants: `.container--width-{sm|md|lg|full}`
+  - [x] Tokens: `--container-max-width`
+  - [x] Props: `width`, `as`
+  - [x] Tests: `width` modifier applied
+- [x] **`Divider`** (atom)
+  - [x] Parts: `.divider`
+  - [x] Variants: `.divider--orientation-{horizontal|vertical}`
+  - [x] Tokens: `--divider-color`
+  - [x] Props: `orientation`
+  - [x] A11y: `role="separator"` + `aria-orientation`
+  - [x] Tests: orientation modifier applied, role present
+- [x] **`Tooltip`** (molecule) — trigger + content composition
+  - [x] Parts: `.tooltip`, `.tooltip__trigger`, `.tooltip__content`, `.tooltip__arrow`
+  - [x] States: `data-state` — *(implemented as conditional render instead; see below)*
+  - [x] Tokens: `--tooltip-bg`, `--tooltip-fg`
+  - [x] Props: `content`, `delay`, `placement`
+  - [x] A11y: `role="tooltip"`, `aria-describedby` wired from trigger to content, dismisses on `Escape`; uses `onFocusIn`/`onFocusOut` (not `onFocus`/`onBlur`) so focus anywhere inside the trigger opens it, matching real bubbling semantics regardless of what else `preact/compat` has patched
+  - [x] Tests: opens on focus after `delay`, closes on `Escape`, `aria-describedby` present *(RTL's `fireEvent.focusIn`/`mouseEnter` don't reliably bubble in this jsdom version either — tests dispatch `FocusEvent`s manually, same class of quirk as `Select`'s)*
+- [x] **`Popover`** (molecule)
+  - [x] Parts: `.popover`, `.popover__trigger`, `.popover__content`
+  - [x] States: `data-state="open|closed"` (built on shared `useDisclosure`)
+  - [x] Tokens: `--popover-bg`, `--popover-border`, `--popover-shadow`
+  - [x] Props: `open`/`defaultOpen`, `onOpenChange`
+  - [x] A11y: focus moves into content on open (`useFocusTrap`), returns to trigger on close, closes on outside click / `Escape`
+  - [x] Tests: focus trap engages (content receives focus), outside click closes, controlled open state
+
+**Exit criteria (revised):** the `playground.html` gallery demonstrates every
+NORMAL component (`Field`-wrapped `Input`/`Textarea`/`Select`, `Checkbox`,
+`Switch`, `Grid`/`Container`/`Divider`, `Tooltip`, `Popover`) alongside
+BASIC's — done. Migrating `src/app.tsx`'s hero page onto `src/ui` remains
+open, same as BASIC's exit criteria.
 
 ---
 

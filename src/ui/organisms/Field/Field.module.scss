@@ -1,0 +1,27 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.field__label {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--field-label-color, var(--color-fg));
+}
+
+.field__hint {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-fg-muted);
+}
+
+.field__error {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--field-error-color, var(--color-danger));
+}
+
+.field[data-invalid] .field__label {
+  --field-label-color: var(--color-danger);
+}

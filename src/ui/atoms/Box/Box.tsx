@@ -1,11 +1,10 @@
-import { forwardRef } from 'preact/compat'
 import { cx } from '@ui/utils/cx'
-import { asPolymorphic } from '@ui/utils/polymorphic'
+import { asPolymorphic, polymorphicForwardRef } from '@ui/utils/polymorphic'
 import styles from './Box.module.scss'
-import type { BoxProps } from './Box.types'
+import type { BoxOwnProps } from './Box.types'
 
 /** Polymorphic layout escape hatch — renders whatever `as` says, nothing more. */
-export const Box = forwardRef<HTMLElement, BoxProps>(function Box(
+export const Box = polymorphicForwardRef<BoxOwnProps>(function Box(
   { as: tag = 'div', className, ...rest },
   ref,
 ) {
