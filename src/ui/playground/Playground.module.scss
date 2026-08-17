@@ -1,4 +1,9 @@
 .page {
+  // establishes .page's own stacking context so the glow's z-index: -1
+  // below stays contained here rather than escaping to compete with
+  // whatever ancestor happens to be the nearest positioned one
+  position: relative;
+  z-index: 0;
   min-height: 100svh;
   // mobile-first fluid gutters — scale continuously with the viewport
   // instead of jumping at a breakpoint
@@ -7,20 +12,64 @@
   background: var(--color-bg);
   color: var(--color-fg);
   font-family: var(--font-sans);
+  overflow-x: clip;
+}
+
+// a quiet echo of the hero page's glow, at a fraction of the strength —
+// this is a component gallery, not a marketing page, so the background
+// should recede, not compete with the components sitting on top of it.
+// Sunk via a negative z-index instead of giving every .section a positive
+// one: a positive z-index on .section would make each card its own
+// stacking context, which traps any overlay inside it (Popover, Menu, …) —
+// a later card in DOM order would then paint over an earlier card's open
+// overlay regardless of the overlay's own z-index, since z-index only
+// competes within its nearest stacking context, not globally.
+.page::before {
+  content: '';
+  position: absolute;
+  top: -12rem;
+  left: 50%;
+  width: min(70rem, 140vw);
+  height: 28rem;
+  transform: translateX(-50%);
+  background: radial-gradient(
+    ellipse at top,
+    color-mix(in srgb, var(--color-accent) 12%, transparent),
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: -1;
 }
 
 .header {
-  max-width: 720px;
-  margin: 0 auto var(--space-8);
+  max-width: 760px;
+  margin: 0 auto var(--space-10);
+}
+
+// bigger than a section's <h2> on purpose — the page title needs to read
+// as one level above the cards, which var(--font-size-lg) alone doesn't
+// give it (Text's own scale tops out at "lg", same size as every h2 here).
+// !important: Text.module.scss and this stylesheet are separate CSS-module
+// chunks with no guaranteed bundle order, so cascade order can't be relied
+// on for an override — this is the className escape hatch, used as intended.
+.pageTitle {
+  font-size: clamp(1.375rem, 1rem + 1.6vw, 1.75rem) !important;
+  letter-spacing: -0.02em;
 }
 
 .section {
-  max-width: 720px;
-  margin: 0 auto var(--space-8);
-  padding: clamp(1rem, 3vw, 1.5rem);
+  max-width: 760px;
+  margin: 0 auto var(--space-6);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--duration-base) var(--ease-standard);
+
+  &:hover {
+    box-shadow: var(--shadow-md);
+  }
 }
 
 .sectionTitle {
@@ -36,7 +85,8 @@
   width: var(--space-16);
   height: var(--space-8);
   border-radius: var(--radius-md);
-  background: var(--color-accent);
+  background: var(--gradient-accent);
+  box-shadow: var(--shadow-sm);
 }
 
 .containerDemo {

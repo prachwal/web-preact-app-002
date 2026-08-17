@@ -12,17 +12,42 @@
   color: var(--color-fg);
   font-family: var(--font-sans);
   font-size: var(--font-size-md);
-  padding: var(--space-2) var(--space-3);
+  // right padding reserves room for the chevron below so typed text never
+  // runs under it
+  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
+  box-shadow: var(--shadow-sm);
+  transition:
+    border-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
 
   &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 1px;
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 22%, transparent);
+  }
+}
+
+// signals "this opens a list" the way a native <select> does natively —
+// Combobox has no such affordance without it
+.combobox__chevron {
+  position: absolute;
+  top: 50%;
+  right: var(--space-3);
+  width: 16px;
+  height: 16px;
+  transform: translateY(-50%);
+  color: var(--color-fg-muted);
+  pointer-events: none;
+  transition: transform var(--duration-fast) var(--ease-standard);
+
+  .combobox[data-state='open'] & {
+    transform: translateY(-50%) rotate(180deg);
   }
 }
 
 .combobox__list {
   position: absolute;
-  top: calc(100% + var(--space-1));
+  top: calc(100% + var(--space-2));
   left: 0;
   right: 0;
   max-height: 220px;
@@ -33,10 +58,11 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--color-border);
   background: var(--combobox-list-bg, var(--color-surface));
-  box-shadow: 0 12px 24px rgb(0 0 0 / 12%);
+  box-shadow: var(--shadow-lg);
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   z-index: 20;
+  animation: combobox-in var(--duration-fast) var(--ease-decelerate);
 }
 
 .combobox__option {
@@ -44,12 +70,21 @@
   border-radius: var(--radius-sm);
   color: var(--color-fg);
   cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard);
 
   &[data-selected] {
     font-weight: 600;
+    color: var(--color-accent);
   }
 
   &[data-highlighted] {
     background: var(--combobox-option-highlight-bg, var(--color-bg-subtle));
+  }
+}
+
+@keyframes combobox-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
   }
 }

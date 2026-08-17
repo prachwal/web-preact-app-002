@@ -31,4 +31,6 @@ export interface TabsContextValue {
   setValue: (value: string) => void
   registerTrigger: (value: string, el: HTMLButtonElement | null) => void
   focusAdjacent: (current: string, dir: 1 | -1 | 'first' | 'last') => void
+  /** exposed so List can measure the active trigger for the sliding indicator */
+  triggers: { current: Map<string, HTMLButtonElement> }
 }

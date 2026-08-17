@@ -56,7 +56,7 @@ export function Playground() {
     <ThemeProvider theme={theme}>
       <Box as="main" className={styles.page}>
         <Stack direction="row" justify="between" align="center" className={styles.header}>
-          <Text as="h1" size="lg" weight="bold">
+          <Text as="h1" size="lg" weight="bold" className={styles.pageTitle}>
             Component gallery
           </Text>
           <Stack direction="row" gap={2}>

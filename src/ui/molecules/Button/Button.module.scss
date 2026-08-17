@@ -8,25 +8,37 @@
   background: var(--button-bg, var(--color-accent));
   color: var(--button-fg, var(--color-accent-fg));
   font-family: var(--font-sans);
-  font-weight: 500;
+  font-weight: 600;
+  letter-spacing: -0.01em;
   cursor: pointer;
+  box-shadow: var(--button-shadow, var(--shadow-sm));
   transition:
-    transform 0.15s ease,
-    opacity 0.15s ease;
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    opacity var(--duration-fast) var(--ease-standard);
 
   &:hover:not(:disabled) {
     transform: translateY(-1px);
+    box-shadow: var(--button-shadow-hover, var(--shadow-md));
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+    box-shadow: var(--button-shadow, var(--shadow-sm));
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow:
+      0 0 0 3px var(--color-bg),
+      0 0 0 5px var(--color-accent);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none;
+    box-shadow: none;
   }
 
   &[data-loading] {
@@ -67,10 +79,14 @@
   --button-bg: var(--color-bg-subtle);
   --button-fg: var(--color-fg);
   --button-border: var(--color-border);
+  --button-shadow: none;
+  --button-shadow-hover: var(--shadow-sm);
 }
 
 .button--tone-accent {
-  --button-bg: var(--color-accent);
+  // the one place the brand gradient shows up at full strength — every
+  // other tone stays flat, per "spend the boldness in one place"
+  --button-bg: var(--gradient-accent);
   --button-fg: var(--color-accent-fg);
 }
 

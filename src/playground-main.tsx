@@ -1,4 +1,5 @@
 import { render } from 'preact'
+import '@fontsource-variable/inter/wght.css'
 import '@ui/index.scss'
 import { Playground } from '@ui/playground/Playground'
 

@@ -5,19 +5,20 @@
 }
 
 .tabs__list {
+  position: relative;
   display: flex;
   gap: var(--space-1);
   border-bottom: 1px solid var(--color-border);
 }
 
 .tabs__trigger {
-  position: relative;
   padding: var(--space-2) var(--space-3);
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: 600;
   color: var(--color-fg-muted);
   cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
   transition: color var(--duration-fast) var(--ease-standard);
 
   &:hover:not(:disabled) {
@@ -25,8 +26,8 @@
   }
 
   &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: -2px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-accent) 35%, transparent);
   }
 
   &:disabled {
@@ -39,20 +40,34 @@
   }
 }
 
+// one shared indicator (rendered by Tabs.List, positioned by measuring the
+// active trigger) that slides between tabs instead of a static per-trigger
+// underline — the signature motion touch for this component family
 .tabs__indicator {
   position: absolute;
   left: 0;
-  right: 0;
   bottom: -1px;
   height: 2px;
-  background: var(--tabs-indicator-color, var(--color-accent));
+  border-radius: var(--radius-full);
+  background: var(--tabs-indicator-color, var(--gradient-accent));
+  transition:
+    transform var(--duration-base) var(--ease-standard),
+    width var(--duration-base) var(--ease-standard);
 }
 
 .tabs__panel {
   font-family: var(--font-sans);
+  animation: tabs-panel-in var(--duration-fast) var(--ease-decelerate);
 
   &:focus-visible {
-    outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 35%, transparent);
+    border-radius: var(--radius-sm);
+  }
+}
+
+@keyframes tabs-panel-in {
+  from {
+    opacity: 0;
   }
 }

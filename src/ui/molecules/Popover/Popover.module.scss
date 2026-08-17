@@ -17,10 +17,18 @@
   border-radius: var(--radius-md);
   border: 1px solid var(--popover-border, var(--color-border));
   background: var(--popover-bg, var(--color-surface));
-  box-shadow: var(--popover-shadow, 0 8px 24px rgba(0, 0, 0, 0.12));
+  box-shadow: var(--popover-shadow, var(--shadow-lg));
   z-index: 20;
+  animation: popover-in var(--duration-fast) var(--ease-decelerate);
 
   &:focus-visible {
     outline: none;
+  }
+}
+
+@keyframes popover-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
   }
 }

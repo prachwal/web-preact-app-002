@@ -18,7 +18,15 @@
   font-size: var(--font-size-sm);
   white-space: nowrap;
   pointer-events: none;
+  box-shadow: var(--shadow-sm);
   z-index: 10;
+  animation: tooltip-in var(--duration-fast) var(--ease-decelerate);
+}
+
+@keyframes tooltip-in {
+  from {
+    opacity: 0;
+  }
 }
 
 .tooltip__content--top {

@@ -1,5 +1,5 @@
 import { createContext } from 'preact'
-import { useCallback, useContext, useEffect, useRef } from 'preact/hooks'
+import { useCallback, useContext, useLayoutEffect, useRef, useState } from 'preact/hooks'
 import { cx } from '@ui/utils/cx'
 import { useControllableState } from '@ui/utils/useControllableState'
 import styles from './Tabs.module.scss'
@@ -50,16 +50,43 @@ function Root({ value, defaultValue, onValueChange, className, children }: TabsR
   )
 
   return (
-    <TabsContext.Provider value={{ value: current, setValue: setCurrent, registerTrigger, focusAdjacent }}>
+    <TabsContext.Provider
+      value={{ value: current, setValue: setCurrent, registerTrigger, focusAdjacent, triggers }}
+    >
       <div class={cx(styles.tabs, className)}>{children}</div>
     </TabsContext.Provider>
   )
 }
 
+/** One shared indicator, positioned by measuring the active trigger — a
+ * sliding pill reads as far more "premium" than a static per-trigger
+ * underline, and it's cheap once the trigger refs already exist. */
 function List({ className, children }: TabsListProps) {
+  const { value, triggers } = useTabsContext()
+  const listRef = useRef<HTMLDivElement>(null)
+  const [rect, setRect] = useState<{ left: number; width: number } | null>(null)
+
+  useLayoutEffect(() => {
+    const list = listRef.current
+    const trigger = triggers.current.get(value)
+    if (!list || !trigger) return
+    setRect({ left: trigger.offsetLeft, width: trigger.offsetWidth })
+    // re-measure on resize — the list can reflow (e.g. a narrower viewport)
+    const onResize = () => setRect({ left: trigger.offsetLeft, width: trigger.offsetWidth })
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [value, children, triggers])
+
   return (
-    <div role="tablist" class={cx(styles.tabs__list, className)}>
+    <div ref={listRef} role="tablist" class={cx(styles.tabs__list, className)}>
       {children}
+      {rect && (
+        <span
+          class={styles.tabs__indicator}
+          aria-hidden="true"
+          style={{ transform: `translateX(${rect.left}px)`, width: `${rect.width}px` }}
+        />
+      )}
     </div>
   )
 }
@@ -69,7 +96,11 @@ function Trigger({ value, disabled, className, children }: TabsTriggerProps) {
   const ref = useRef<HTMLButtonElement>(null)
   const isActive = active === value
 
-  useEffect(() => {
+  // useLayoutEffect (not useEffect): registration must land before List's
+  // own useLayoutEffect reads the map to measure the indicator — layout
+  // effects fire child-first, so this ordering only holds if both are the
+  // same effect phase.
+  useLayoutEffect(() => {
     registerTrigger(value, ref.current)
     return () => registerTrigger(value, null)
   }, [value, registerTrigger])
@@ -104,7 +135,6 @@ function Trigger({ value, disabled, className, children }: TabsTriggerProps) {
       }}
     >
       {children}
-      {isActive && <span class={styles.tabs__indicator} aria-hidden="true" />}
     </button>
   )
 }

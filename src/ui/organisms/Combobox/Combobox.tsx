@@ -87,6 +87,14 @@ export function Combobox({
         }}
         {...rest}
       />
+      <svg
+        class={styles.combobox__chevron}
+        aria-hidden="true"
+        viewBox="0 0 16 16"
+        fill="none"
+      >
+        <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
       {open && filtered.length > 0 && (
         <ul role="listbox" id={listId} class={styles.combobox__list}>
           {filtered.map((option, index) => (

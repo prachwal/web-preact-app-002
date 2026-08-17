@@ -11,11 +11,16 @@
   --color-fg: #{p.$gray-950};
   --color-fg-muted: #{p.$gray-600};
   --color-border: #{p.$gray-200};
-  --color-accent: #{p.$indigo-500};
+  --color-accent: #{p.$violet-500};
+  --color-accent-2: #{p.$pink-500};
   --color-accent-fg: #ffffff;
   --color-danger: #{p.$red-500};
   --color-success: #{p.$green-500};
   --color-warning: #{p.$amber-500};
+
+  // primary CTAs read this pair for a two-stop gradient instead of a flat
+  // fill — the one place the accent gets to be loud (see Button.module.scss)
+  --gradient-accent: linear-gradient(135deg, var(--color-accent), var(--color-accent-2));
 
   --font-sans: #{p.$font-sans};
   --font-mono: #{p.$font-mono};
@@ -35,6 +40,13 @@
   --ease-decelerate: cubic-bezier(0, 0, 0, 1);
   --ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
 
+  // elevation — soft/layered rather than a single flat rgba(0,0,0,.12);
+  // redefined (not just re-tinted) for dark mode below, since a black
+  // shadow barely reads against an already-dark surface
+  --shadow-sm: 0 1px 2px rgba(16, 15, 25, 0.06), 0 1px 1px rgba(16, 15, 25, 0.04);
+  --shadow-md: 0 8px 24px -4px rgba(16, 15, 25, 0.12), 0 2px 6px -2px rgba(16, 15, 25, 0.08);
+  --shadow-lg: 0 24px 48px -12px rgba(16, 15, 25, 0.22), 0 8px 16px -4px rgba(16, 15, 25, 0.12);
+
   @each $key, $value in p.$radius-scale {
     --radius-#{$key}: #{$value};
   }
@@ -50,8 +62,13 @@
   --color-fg: #{p.$gray-50};
   --color-fg-muted: #{p.$gray-400};
   --color-border: #{p.$gray-600};
-  --color-accent: #{p.$indigo-300};
+  --color-accent: #{p.$violet-300};
+  --color-accent-2: #{p.$pink-400};
   --color-accent-fg: #{p.$gray-950};
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px -4px rgba(0, 0, 0, 0.5), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 24px 48px -12px rgba(0, 0, 0, 0.6), 0 8px 16px -4px rgba(0, 0, 0, 0.4);
 }
 
 @media (prefers-color-scheme: dark) {
