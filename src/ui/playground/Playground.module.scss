@@ -42,3 +42,8 @@
 .containerDemo {
   border: 1px dashed var(--color-border);
 }
+
+.dialogActions {
+  margin-top: var(--space-4);
+  justify-content: flex-end;
+}

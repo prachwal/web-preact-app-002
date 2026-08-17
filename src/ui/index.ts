@@ -63,6 +63,32 @@ export type { PopoverProps, PopoverOwnProps } from '@ui/molecules/Popover'
 export { Field } from '@ui/organisms/Field'
 export type { FieldProps, FieldOwnProps, FieldControlProps } from '@ui/organisms/Field'
 
+export { Tabs } from '@ui/organisms/Tabs'
+export type {
+  TabsRootProps,
+  TabsListProps,
+  TabsTriggerProps,
+  TabsPanelProps,
+} from '@ui/organisms/Tabs'
+
+export { Dialog } from '@ui/organisms/Dialog'
+export type {
+  DialogRootProps,
+  DialogTriggerProps,
+  DialogContentProps,
+  DialogTitleProps,
+  DialogCloseProps,
+} from '@ui/organisms/Dialog'
+
+export { Menu } from '@ui/organisms/Menu'
+export type { MenuRootProps, MenuTriggerProps, MenuContentProps, MenuItemProps } from '@ui/organisms/Menu'
+
+export { Combobox } from '@ui/organisms/Combobox'
+export type { ComboboxProps, ComboboxOwnProps, ComboboxOption } from '@ui/organisms/Combobox'
+
+export { ToastViewport, toast } from '@ui/organisms/Toast'
+export type { ToastItem, ToastInput, ToastType, ToastViewportProps } from '@ui/organisms/Toast'
+
 // --- theme ---
 export { ThemeProvider, useTheme } from '@ui/theme/ThemeProvider'
 export type { ThemeProviderProps, ThemeMode, ThemeContextValue } from '@ui/theme/theme.types'
@@ -74,6 +100,7 @@ export { useControllableState } from '@ui/utils/useControllableState'
 export { useDisclosure } from '@ui/utils/useDisclosure'
 export { useFocusTrap } from '@ui/utils/useFocusTrap'
 export { mergeRefs } from '@ui/utils/mergeRefs'
+export { prefersReducedMotion, animateIfAllowed } from '@ui/utils/motion'
 export type { ElementTag, PolymorphicProps } from '@ui/utils/polymorphic'
 
 // --- tokens ---

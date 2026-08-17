@@ -24,5 +24,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: './src/test/setup.ts',
+    // e2e/**/*.spec.ts are Playwright visual-regression specs (`npm run
+    // test:visual`), not Vitest — exclude them from the default glob.
+    exclude: ['**/node_modules/**', 'e2e/**'],
   },
 })

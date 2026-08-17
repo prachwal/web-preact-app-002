@@ -25,6 +25,16 @@
   --font-size-md: #{p.fluid(15, 16)};
   --font-size-lg: #{p.fluid(18, 22)};
 
+  // motion — PREMIUM compound components (Tabs/Dialog/Menu/Toast) transition
+  // through these, never a hardcoded duration; zeroed out below for
+  // prefers-reduced-motion instead of each component re-checking it in CSS
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+  --ease-decelerate: cubic-bezier(0, 0, 0, 1);
+  --ease-accelerate: cubic-bezier(0.3, 0, 1, 1);
+
   @each $key, $value in p.$radius-scale {
     --radius-#{$key}: #{$value};
   }
@@ -52,4 +62,17 @@
 
 :root[data-theme='dark'] {
   @include dark-palette;
+}
+
+// CSS-only half of "respect prefers-reduced-motion": zero every duration
+// token so transitions authored as `transition-duration: var(--duration-*)`
+// collapse to instant, with no per-component media query needed. JS-driven
+// animations (Toast's exit) check `utils/motion.ts`'s prefersReducedMotion()
+// instead, since a WAAPI animation isn't just a CSS custom property.
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+    --duration-base: 0ms;
+    --duration-slow: 0ms;
+  }
 }

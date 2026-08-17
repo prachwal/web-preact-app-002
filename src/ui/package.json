@@ -7,7 +7,10 @@
     "*.scss"
   ],
   "exports": {
-    ".": "./index.ts"
+    ".": {
+      "types": "./index.ts",
+      "import": "./index.ts"
+    }
   },
   "peerDependencies": {
     "preact": "^10.29.8"

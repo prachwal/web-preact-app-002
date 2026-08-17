@@ -15,10 +15,21 @@ import { Popover } from '@ui/molecules/Popover'
 import { Stack } from '@ui/molecules/Stack'
 import { Tooltip } from '@ui/molecules/Tooltip'
 import { Text } from '@ui/atoms/Text'
+import { Combobox } from '@ui/organisms/Combobox'
+import { Dialog } from '@ui/organisms/Dialog'
 import { Field } from '@ui/organisms/Field'
+import { Menu } from '@ui/organisms/Menu'
+import { Tabs } from '@ui/organisms/Tabs'
+import { ToastViewport, toast } from '@ui/organisms/Toast'
 import { ThemeProvider } from '@ui/theme/ThemeProvider'
 import type { ThemeMode } from '@ui/theme/theme.types'
 import styles from './Playground.module.scss'
+
+const fruitOptions = [
+  { value: 'apple', label: 'Apple' },
+  { value: 'apricot', label: 'Apricot' },
+  { value: 'banana', label: 'Banana' },
+]
 
 const tones = ['neutral', 'accent', 'danger'] as const
 const sizes = ['sm', 'md', 'lg'] as const
@@ -43,7 +54,7 @@ export function Playground() {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box className={styles.page}>
+      <Box as="main" className={styles.page}>
         <Stack direction="row" justify="between" align="center" className={styles.header}>
           <Text as="h1" size="lg" weight="bold">
             Component gallery
@@ -181,7 +192,82 @@ export function Playground() {
             </Popover>
           </Stack>
         </Section>
+
+        <Section title="Tabs (PREMIUM)">
+          <Tabs.Root defaultValue="account">
+            <Tabs.List>
+              <Tabs.Trigger value="account">Account</Tabs.Trigger>
+              <Tabs.Trigger value="billing">Billing</Tabs.Trigger>
+              <Tabs.Trigger value="disabled" disabled>
+                Disabled
+              </Tabs.Trigger>
+            </Tabs.List>
+            <Tabs.Panel value="account">
+              <Text size="sm">Account settings panel.</Text>
+            </Tabs.Panel>
+            <Tabs.Panel value="billing">
+              <Text size="sm">Billing panel — arrow keys move between tabs.</Text>
+            </Tabs.Panel>
+          </Tabs.Root>
+        </Section>
+
+        <Section title="Dialog & Menu (PREMIUM)">
+          <Stack direction="row" gap={4} align="center">
+            <Dialog.Root>
+              <Dialog.Trigger asChild>
+                <Button size="sm">Open dialog</Button>
+              </Dialog.Trigger>
+              <Dialog.Content>
+                <Dialog.Close />
+                <Dialog.Title>Delete item?</Dialog.Title>
+                <Text size="sm" tone="fg-muted">
+                  This can't be undone. Focus is trapped here — try Tab.
+                </Text>
+                <Stack direction="row" gap={2} className={styles.dialogActions}>
+                  <Button size="sm" tone="danger">
+                    Delete
+                  </Button>
+                </Stack>
+              </Dialog.Content>
+            </Dialog.Root>
+
+            <Menu.Root>
+              <Menu.Trigger asChild>
+                <Button size="sm" tone="neutral">
+                  Actions ▾
+                </Button>
+              </Menu.Trigger>
+              <Menu.Content>
+                <Menu.Item onSelect={() => toast.show({ title: 'Renamed', type: 'success' })}>
+                  Rename
+                </Menu.Item>
+                <Menu.Item onSelect={() => toast.show({ title: 'Duplicated' })}>Duplicate</Menu.Item>
+                <Menu.Item disabled>Archive (disabled)</Menu.Item>
+              </Menu.Content>
+            </Menu.Root>
+          </Stack>
+        </Section>
+
+        <Section title="Combobox & Toast (PREMIUM)">
+          <Stack gap={4} align="start">
+            <Combobox options={fruitOptions} aria-label="Favorite fruit" placeholder="Type to filter…" />
+            <Button
+              size="sm"
+              onClick={() =>
+                toast.show({
+                  title: 'Saved',
+                  description: 'Your changes were saved.',
+                  type: 'info',
+                })
+              }
+            >
+              Fire a toast
+            </Button>
+          </Stack>
+        </Section>
       </Box>
+
+      <ToastViewport />
     </ThemeProvider>
   )
 }

@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Playwright — baseline screenshots in e2e/**/*-snapshots/ ARE tracked
+test-results
+playwright-report
+blob-report
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
