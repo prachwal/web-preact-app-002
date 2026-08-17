@@ -23,6 +23,7 @@ import { Tabs } from '@ui/organisms/Tabs'
 import { ToastViewport, toast } from '@ui/organisms/Toast'
 import { ThemeProvider } from '@ui/theme/ThemeProvider'
 import type { ThemeMode } from '@ui/theme/theme.types'
+import { cx } from '@ui/utils/cx'
 import styles from './Playground.module.scss'
 
 const fruitOptions = [
@@ -38,9 +39,24 @@ const badgeTones = ['neutral', 'accent', 'success', 'warning', 'danger'] as cons
 // One Section per component (not grouped by tier) so each one is a stable,
 // independent target for both a human scanning the page and the
 // per-component visual-regression tests in e2e/components.spec.ts.
-function Section({ title, children }: { title: string; children: ComponentChildren }) {
+function Section({
+  title,
+  overlay,
+  children,
+}: {
+  title: string
+  // Cards whose open state is a floating overlay (Tooltip, Popover, Menu,
+  // Combobox) get extra margin-bottom so the panel doesn't visually
+  // overlap the next card — see .section--overlay in Playground.module.scss.
+  overlay?: boolean
+  children: ComponentChildren
+}) {
   return (
-    <Box as="section" className={styles.section} data-component={title}>
+    <Box
+      as="section"
+      className={cx(styles.section, overlay && styles['section--overlay'])}
+      data-component={title}
+    >
       <Text as="h2" size="lg" weight="bold" className={styles.sectionTitle}>
         {title}
       </Text>
@@ -217,7 +233,7 @@ export function Playground() {
           </Stack>
         </Section>
 
-        <Section title="Tooltip">
+        <Section title="Tooltip" overlay>
           <Tooltip content="A helpful hint">
             <Button size="sm" tone="neutral">
               Hover or focus me
@@ -225,7 +241,7 @@ export function Playground() {
           </Tooltip>
         </Section>
 
-        <Section title="Popover">
+        <Section title="Popover" overlay>
           <Popover trigger={<Button size="sm">Open popover</Button>}>
             <Text size="sm">Popover content — Tab traps focus, click outside or Escape closes.</Text>
           </Popover>
@@ -269,7 +285,7 @@ export function Playground() {
           </Dialog.Root>
         </Section>
 
-        <Section title="Menu">
+        <Section title="Menu" overlay>
           <Menu.Root>
             <Menu.Trigger asChild>
               <Button size="sm" tone="neutral">
@@ -286,7 +302,7 @@ export function Playground() {
           </Menu.Root>
         </Section>
 
-        <Section title="Combobox">
+        <Section title="Combobox" overlay>
           <Combobox options={fruitOptions} aria-label="Favorite fruit" placeholder="Type to filter…" />
         </Section>
 

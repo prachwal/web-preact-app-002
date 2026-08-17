@@ -72,6 +72,17 @@
   }
 }
 
+// Extra breathing room under the handful of cards whose open state is a
+// floating overlay (Tooltip, Popover, Menu, Combobox — the same set
+// e2e/components.spec.ts already treats as "escapes the card" and falls
+// back to a full-page shot for). The overlay itself is correctly on top by
+// z-index (verified: it's not a stacking-context trap, see .page::before
+// above) — this is purely cosmetic, so the open panel lands in dead space
+// instead of visually overlapping the next card's border.
+.section--overlay {
+  margin-bottom: var(--space-32);
+}
+
 .sectionTitle {
   display: block;
   margin-bottom: var(--space-4);
