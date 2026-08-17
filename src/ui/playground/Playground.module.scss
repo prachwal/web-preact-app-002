@@ -1,0 +1,37 @@
+.page {
+  min-height: 100svh;
+  padding: var(--space-8) var(--space-6) var(--space-24);
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+}
+
+.header {
+  max-width: 720px;
+  margin: 0 auto var(--space-8);
+}
+
+.section {
+  max-width: 720px;
+  margin: 0 auto var(--space-8);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+}
+
+.sectionTitle {
+  display: block;
+  margin-bottom: var(--space-4);
+}
+
+.swatchRow {
+  width: 100%;
+}
+
+.swatch {
+  width: var(--space-16);
+  height: var(--space-8);
+  border-radius: var(--radius-md);
+  background: var(--color-accent);
+}

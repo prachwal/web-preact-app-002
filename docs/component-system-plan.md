@@ -210,51 +210,55 @@ components.
 
 ### BASIC infrastructure
 
-- [ ] `src/ui` package skeleton: own `package.json` (name, `"type": "module"`,
-      `exports` map, `peerDependencies: { preact: "^10" }`, `sideEffects: false`), own `tsconfig.json`
-- [ ] Token layer: `_primitive.scss` + `_semantic.scss`, compiled to `:root` CSS vars, light/dark via `prefers-color-scheme` (reuse pattern already in `src/styles/_reset.scss`)
-- [ ] `ThemeProvider` (context + `data-theme` attribute override, no override-object support yet)
-- [ ] `utils/cx`, `utils/variant` (hand-rolled, shown above)
-- [ ] Barrel `src/ui/index.ts` — app imports only from here
+- [x] `src/ui` package skeleton: own `package.json` (name, `"type": "module"`,
+      `exports` map, `peerDependencies: { preact: "^10" }`, `sideEffects: false`)
+- [ ] own `tsconfig.json` — deferred; `tsconfig.app.json` already covers `src/**`, a nested project reference only earns its keep at the actual NORMAL-tier extraction dress rehearsal
+- [x] Token layer: `_primitive.scss` + `_semantic.scss`, compiled to `:root` CSS vars, light/dark via `prefers-color-scheme` **and** an explicit `[data-theme]` override (the app's own reset only had the media-query half)
+- [x] `ThemeProvider` (context + `data-theme` attribute override, no override-object support yet)
+- [x] `utils/cx`, `utils/variant` (hand-rolled, shown above) — `variant()` ended up taking the CSS-module `styles` map as a second argument to resolve class names, a small deviation from the §3 sketch
+- [x] Barrel `src/ui/index.ts` — app imports only from here
 
 ### BASIC components
 
-- [ ] **`Box`** — polymorphic layout escape hatch
-  - [ ] Parts: `.box` (root only)
-  - [ ] Variants: none — pure passthrough, no SCSS modifiers
-  - [ ] Props: `as`, `className`, `style`, `children`
-  - [ ] A11y: renders exactly as the `as` element, no implicit role
-  - [ ] Tests: renders custom `as` tag, forwards `className`/`style`
-- [ ] **`Stack`** — flex layout primitive
-  - [ ] Parts: `.stack`
-  - [ ] Variants: `.stack--direction-{row|column}`, `.stack--align-{start|center|end|stretch}`, `.stack--justify-{start|center|end|between}`
-  - [ ] Tokens: `--stack-gap`
-  - [ ] Props: `direction`, `align`, `justify`, `gap` (`SpaceToken`), `as`
-  - [ ] Tests: `gap` token applied, `direction` modifier applied
-- [ ] **`Text`** — typography primitive
-  - [ ] Parts: `.text`
-  - [ ] Variants: `.text--size-{sm|md|lg}`, `.text--weight-{regular|medium|bold}`, `.text--tone-{fg|fg-muted|danger}`
-  - [ ] Tokens: `--text-color`
-  - [ ] Props: `size`, `weight`, `tone`, `as` (default `span`)
-  - [ ] Tests: each size/tone variant applies the expected class
-- [ ] **`Button`**
-  - [ ] Parts: `.button`, `.button__icon`, `.button__label`, `.button__spinner`
-  - [ ] Variants: `.button--tone-{neutral|accent|danger}`, `.button--size-{sm|md|lg}`
-  - [ ] States: `[data-loading]`, `[disabled]`
-  - [ ] Tokens: `--button-bg`, `--button-fg`, `--button-border`, `--button-radius`
-  - [ ] Props: `tone`, `size`, `loading`, `disabled`, `as`, `className`, `style`
-  - [ ] A11y: native `<button>` by default, `aria-busy` when `loading`, visible `:focus-visible` ring
-  - [ ] Tests: tone/size variants render the right class, `disabled` blocks `onClick`, `loading` sets `aria-busy`
-- [ ] **`Badge`**
-  - [ ] Parts: `.badge`, `.badge__dot`
-  - [ ] Variants: `.badge--tone-{neutral|accent|success|warning|danger}`
-  - [ ] Tokens: `--badge-bg`, `--badge-fg`
-  - [ ] Props: `tone`, `children`
-  - [ ] A11y: renders as `<span>`, decorative dot carries `aria-hidden`
-  - [ ] Tests: tone variant applies class, dot hidden from the a11y tree
+- [x] **`Box`** — polymorphic layout escape hatch
+  - [x] Parts: `.box` (root only)
+  - [x] Variants: none — pure passthrough, no SCSS modifiers
+  - [x] Props: `as`, `className`, `style`, `children`
+  - [x] A11y: renders exactly as the `as` element, no implicit role
+  - [x] Tests: renders custom `as` tag, forwards `className`/`style`
+- [x] **`Stack`** — flex layout primitive
+  - [x] Parts: `.stack`
+  - [x] Variants: `.stack--direction-{row|column}`, `.stack--align-{start|center|end|stretch}`, `.stack--justify-{start|center|end|between}`
+  - [x] Tokens: `--stack-gap`
+  - [x] Props: `direction`, `align`, `justify`, `gap` (`SpaceToken`), `as`
+  - [x] Tests: `gap` token applied, `direction` modifier applied
+- [x] **`Text`** — typography primitive
+  - [x] Parts: `.text`
+  - [x] Variants: `.text--size-{sm|md|lg}`, `.text--weight-{regular|medium|bold}`, `.text--tone-{fg|fg-muted|danger}`
+  - [x] Tokens: `--text-color`
+  - [x] Props: `size`, `weight`, `tone`, `as` (default `span`)
+  - [x] Tests: each size/tone variant applies the expected class
+- [x] **`Button`**
+  - [x] Parts: `.button`, `.button__icon`, `.button__label`, `.button__spinner`
+  - [x] Variants: `.button--tone-{neutral|accent|danger}`, `.button--size-{sm|md|lg}`
+  - [x] States: `[data-loading]`, `[disabled]`
+  - [x] Tokens: `--button-bg`, `--button-fg`, `--button-border`, `--button-radius`
+  - [x] Props: `tone`, `size`, `loading`, `disabled`, `as`, `className`, `style`
+  - [x] A11y: native `<button>` by default, `aria-busy` when `loading`, visible `:focus-visible` ring
+  - [x] Tests: tone/size variants render the right class, `disabled` blocks `onClick`, `loading` sets `aria-busy`
+- [x] **`Badge`**
+  - [x] Parts: `.badge`, `.badge__dot`
+  - [x] Variants: `.badge--tone-{neutral|accent|success|warning|danger}`
+  - [x] Tokens: `--badge-bg`, `--badge-fg`
+  - [x] Props: `tone`, `children`
+  - [x] A11y: renders as `<span>`, decorative dot carries `aria-hidden`
+  - [x] Tests: tone variant applies class, dot hidden from the a11y tree
 
 **Exit criteria:** `src/app.tsx` can build its hero page using only `src/ui`
 components, with zero one-off CSS in `app.scss` for buttons/badges/layout.
+*(Not yet done — the hero page still uses its own SCSS; a `playground.html` /
+`src/ui/playground/Playground.tsx` demo gallery exists instead, showing every
+BASIC component and tone/size variant.)*
 
 ---
 

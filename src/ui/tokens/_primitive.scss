@@ -1,0 +1,43 @@
+// Primitive tokens — raw values only, no meaning attached.
+// The semantic layer (_semantic.scss) is the only place these get assigned a role.
+
+$gray-0: #ffffff;
+$gray-50: #f9fafb;
+$gray-100: #f1f2f4;
+$gray-200: #e4e5e9;
+$gray-400: #9aa0ac;
+$gray-600: #5b616e;
+$gray-800: #23262d;
+$gray-950: #101114;
+
+$indigo-300: #a5b4fc;
+$indigo-500: #4f46e5;
+$indigo-600: #4338ca;
+
+$red-500: #e5484d;
+$green-500: #30a46c;
+$amber-500: #f5a623;
+
+$space-scale: (
+  0: 0,
+  1: 4px,
+  2: 8px,
+  3: 12px,
+  4: 16px,
+  6: 24px,
+  8: 32px,
+  12: 48px,
+  16: 64px,
+  24: 96px,
+  32: 128px,
+);
+
+$radius-scale: (
+  sm: 6px,
+  md: 10px,
+  lg: 16px,
+  full: 999px,
+);
+
+$font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+$font-mono: ui-monospace, Consolas, monospace;

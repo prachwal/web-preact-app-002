@@ -1,0 +1,50 @@
+// Semantic tokens — role-based CSS custom properties consumed by every
+// component. Light values live on :root; dark values are redefined twice
+// (system preference + explicit [data-theme] override) so an explicit
+// ThemeProvider choice always wins over prefers-color-scheme.
+@use 'primitive' as p;
+
+:root {
+  --color-bg: #{p.$gray-0};
+  --color-bg-subtle: #{p.$gray-50};
+  --color-surface: #{p.$gray-0};
+  --color-fg: #{p.$gray-950};
+  --color-fg-muted: #{p.$gray-600};
+  --color-border: #{p.$gray-200};
+  --color-accent: #{p.$indigo-500};
+  --color-accent-fg: #ffffff;
+  --color-danger: #{p.$red-500};
+  --color-success: #{p.$green-500};
+  --color-warning: #{p.$amber-500};
+
+  --font-sans: #{p.$font-sans};
+  --font-mono: #{p.$font-mono};
+
+  @each $key, $value in p.$radius-scale {
+    --radius-#{$key}: #{$value};
+  }
+  @each $key, $value in p.$space-scale {
+    --space-#{$key}: #{$value};
+  }
+}
+
+@mixin dark-palette {
+  --color-bg: #{p.$gray-950};
+  --color-bg-subtle: #{p.$gray-800};
+  --color-surface: #{p.$gray-800};
+  --color-fg: #{p.$gray-50};
+  --color-fg-muted: #{p.$gray-400};
+  --color-border: #{p.$gray-600};
+  --color-accent: #{p.$indigo-300};
+  --color-accent-fg: #{p.$gray-950};
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    @include dark-palette;
+  }
+}
+
+:root[data-theme='dark'] {
+  @include dark-palette;
+}

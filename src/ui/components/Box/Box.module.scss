@@ -1,0 +1,5 @@
+// No modifiers — Box is a pure polymorphic passthrough. The class exists
+// only as a style seam for consumers (`className`/`style` overrides land
+// here) and to keep the naming convention uniform across every component.
+.box {
+}

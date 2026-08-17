@@ -1,0 +1,4 @@
+// Global entry point for the token layer — import this once (e.g. from a
+// page's main.tsx) to get the :root CSS custom properties every ui/
+// component reads. Components themselves never import this.
+@use 'tokens/semantic';

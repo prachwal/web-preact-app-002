@@ -1,0 +1,35 @@
+.text {
+  color: var(--text-color, var(--color-fg));
+  font-family: var(--font-sans);
+  margin: 0;
+
+  &--size-sm {
+    font-size: 0.8125rem;
+  }
+  &--size-md {
+    font-size: 1rem;
+  }
+  &--size-lg {
+    font-size: 1.25rem;
+  }
+
+  &--weight-regular {
+    font-weight: 400;
+  }
+  &--weight-medium {
+    font-weight: 500;
+  }
+  &--weight-bold {
+    font-weight: 700;
+  }
+
+  &--tone-fg {
+    --text-color: var(--color-fg);
+  }
+  &--tone-fg-muted {
+    --text-color: var(--color-fg-muted);
+  }
+  &--tone-danger {
+    --text-color: var(--color-danger);
+  }
+}
